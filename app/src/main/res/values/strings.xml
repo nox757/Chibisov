@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Chibisov</string>
+    <string name="error_connection">Произошла ошибка при загрузке данных. Проверьте подключение к сети.</string>
+    <string name="error_connection_btn">Повторить</string>
 </resources>
