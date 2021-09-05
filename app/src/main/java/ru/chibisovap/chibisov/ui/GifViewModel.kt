@@ -4,28 +4,35 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.chibisovap.chibisov.data.repository.GifApiRepository
 import ru.chibisovap.chibisov.data.api.RetrofitBuilder
 import ru.chibisovap.chibisov.data.model.GifModel
+import ru.chibisovap.chibisov.data.repository.GifApiRepository
 import ru.chibisovap.chibisov.utils.Resource
 
-class GifViewModel() : ViewModel() {
+class GifViewModel : ViewModel() {
 
     private val gifApiRepository: GifApiRepository =
         GifApiRepository(RetrofitBuilder.getGifClient())
 
     private val gif = MutableLiveData<Resource<GifModel>>()
 
+    private var fetchGifJob: Job? = null
+
     private var position: Int = -1
     private val gifModelList: MutableList<GifModel> = mutableListOf()
 
+    fun getPosition() = position
+
     init {
-        fetchGif()
+        if (gifModelList.size == 0) {
+            fetchGif()
+        }
     }
 
     private fun fetchGif() {
-        viewModelScope.launch {
+        fetchGifJob = viewModelScope.launch {
             gif.postValue(Resource.loading(null))
             try {
                 val gifApiResponse = gifApiRepository.getRandomPost()
@@ -46,23 +53,29 @@ class GifViewModel() : ViewModel() {
         return gif
     }
 
-    fun getNextGif(): LiveData<Resource<GifModel>> {
+    fun getNextGif() {
         if (position >= gifModelList.size - 1) {
             fetchGif()
-            return gif
+            return
         }
         position += 1
         gif.postValue(Resource.success(gifModelList[position]))
-        return gif
     }
 
-    fun getPrevGif(): LiveData<Resource<GifModel>> {
-        position -= 1
+    fun getPrevGif() {
+        if (fetchGifJob?.isActive == true) {
+            fetchGifJob?.cancel()
+        } else {
+            position -= 1
+        }
         if (position < 0) {
             position = 0
-            return gif
         }
         gif.postValue(Resource.success(gifModelList[position]))
-        return gif
     }
+
+    fun getReloadGif() {
+        fetchGif()
+    }
+
 }

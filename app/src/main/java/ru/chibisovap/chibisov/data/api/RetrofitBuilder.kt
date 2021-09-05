@@ -5,11 +5,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-
 object RetrofitBuilder {
 
     private const val BASE_URL: String = "https://developerslife.ru/"
-    private const val TIMEOUT_SECONDS: Long = 60
+    private const val TIMEOUT_SECONDS: Long = 30
 
     private val client = OkHttpClient.Builder()
         .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -21,7 +20,6 @@ object RetrofitBuilder {
         .client(client.build())
         .build()
 
-    fun <T> createService(serviceClass: Class<T>): T = retrofit.create(serviceClass)
     fun getGifClient(): GifApiService = retrofit.create(GifApiService::class.java)
 
 }

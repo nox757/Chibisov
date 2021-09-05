@@ -1,7 +1,7 @@
 package ru.chibisovap.chibisov.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import ru.chibisovap.chibisov.R
 
 class MainActivity : AppCompatActivity() {
@@ -9,7 +9,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainer, GifFragment())
+            .replace(R.id.fragmentContainer, GifFragment())
             .commit()
     }
 }
